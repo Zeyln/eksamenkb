@@ -1,14 +1,14 @@
 # EksamenKB — Internal Knowledge Base
 
-## 🧭 Overview
+## Overview
 
-EksamenKB is a full-stack internal knowledge base application designed for companies to let their employees write, organise, and share documentation. It is a hosted B2B product: EksamenKB develops, maintains, and operates the infrastructure on behalf of each client company. The client company is the data controller — they retain admin access to user management and own their data — but EksamenKB manages all hosting. Access is strictly restricted to authorised personnel; there is no public registration.
+EksamenKB is a full-stack internal knowledge base application designed for companies to let their employees write, organise, and share documentation. It is a hosted B2B product: EksamenKB develops, maintains, and operates the infrastructure on behalf of each client company. The client company is the data controller, they retain admin access to user management and own their data, but EksamenKB manages all hosting. Access is strictly restricted to authorised personnel; there is no public registration.
 
 The application is built with Norwegian businesses as the primary market and is designed to comply with GDPR and applicable Norwegian data protection law (Datatilsynet).
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 **Frontend**
 - React 19 + TypeScript
@@ -31,7 +31,7 @@ The application is built with Norwegian businesses as the primary market and is 
 
 ---
 
-## ✅ Features
+## Features
 
 **Authentication**
 - Login / register with email, username, and password
@@ -61,13 +61,3 @@ The application is built with Norwegian businesses as the primary market and is 
 - Data Processing Agreement (DPA) template
 - Passwords stored exclusively as hashed values — never plain text
 - No cookies, tracking, or third-party analytics
-
----
-
-## 🚧 Not yet implemented
-
-- **Role-based access control** — the `role` field exists on the User model but permissions are not yet enforced beyond basic authentication
-- **Admin user management** — client company admins cannot yet manage (invite / deactivate) users through the UI
-- **Search** — full-text search across articles is not yet implemented
-- **Rich text / Markdown** — article content is currently plain text
-- **White-label configuration** — client company name, logo, and branding are hardcoded placeholders
