@@ -26,53 +26,71 @@ export default function RegisterPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-            <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
-                <h1 className="text-2xl font-bold mb-6">Registrer deg</h1>
-                {error && <p className="text-red-500 mb-4 text-sm">{error}</p>}
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium mb-1">E-post</label>
-                        <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
+        <div className="win-dialog-backdrop">
+            <div className="win-dialog">
+                <div className="win-titlebar">
+                    <div className="win-titlebar-title">
+                        <span>📋</span>
+                        <span>Registrer deg — EksamenKB</span>
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium mb-1">Brukernavn</label>
-                        <input
-                            type="text"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
+                    <div className="flex gap-0.5">
+                        <Link to="/" className="win-titlebar-btn" title="Tilbake">✕</Link>
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium mb-1">Passord</label>
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
+                </div>
+
+                <form onSubmit={handleSubmit}>
+                    <div className="win-dialog-body">
+                        {error && <div className="win-error">{error}</div>}
+
+                        <div>
+                            <label className="win-label">E-post:</label>
+                            <input
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="win-input"
+                                required
+                                autoFocus
+                            />
+                        </div>
+
+                        <div>
+                            <label className="win-label">Brukernavn:</label>
+                            <input
+                                type="text"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                className="win-input"
+                                required
+                            />
+                        </div>
+
+                        <div>
+                            <label className="win-label">Passord:</label>
+                            <input
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="win-input"
+                                required
+                            />
+                        </div>
+
+                        <p style={{ fontSize: 11, color: '#404040', marginTop: 4 }}>
+                            Har du allerede konto?{' '}
+                            <Link to="/login" style={{ color: '#000080' }}>Logg inn</Link>
+                        </p>
                     </div>
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
-                    >
-                        {loading ? 'Registrerer...' : 'Registrer deg'}
-                    </button>
+
+                    <div className="win-dialog-footer">
+                        <button type="submit" disabled={loading} className="win-btn">
+                            {loading ? 'Registrerer...' : 'OK'}
+                        </button>
+                        <Link to="/" className="win-btn" style={{ textAlign: 'center' }}>
+                            Avbryt
+                        </Link>
+                    </div>
                 </form>
-                <p className="text-sm text-center mt-4">
-                    Har du allerede konto?{' '}
-                    <Link to="/login" className="text-blue-600 hover:underline">Logg inn</Link>
-                </p>
             </div>
         </div>
     );

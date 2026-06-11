@@ -35,46 +35,112 @@ export default function ArticlePage() {
         navigate('/');
     };
 
-    if (loading) return <div className="p-8">Laster...</div>;
-    if (!article) return <div className="p-8">Artikkel ikke funnet.</div>;
+    if (loading) return (
+        <div className="win-app">
+            <div className="win-titlebar">
+                <div className="win-titlebar-title"><span>▦</span><span>EksamenKB</span></div>
+            </div>
+            <div className="win-content p-2">Laster...</div>
+        </div>
+    );
+
+    if (!article) return (
+        <div className="win-app">
+            <div className="win-titlebar">
+                <div className="win-titlebar-title"><span>▦</span><span>EksamenKB</span></div>
+            </div>
+            <div className="win-content p-2">Artikkel ikke funnet.</div>
+        </div>
+    );
 
     const isAuthor = user?.id === article.author.id;
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <nav className="bg-white border-b px-6 py-4 flex justify-between items-center">
-                <Link to="/" className="text-blue-600 hover:underline text-sm">← Tilbake</Link>
+        <div className="win-app">
+            <div className="win-titlebar">
+                <div className="win-titlebar-title">
+                    <span>📄</span>
+                    <span>{article.title} — EksamenKB</span>
+                </div>
+            </div>
+
+            <div className="win-menubar">
+                <Link to="/" className="win-menubar-item">← Tilbake</Link>
+                <div className="flex-1" />
                 {isAuthor && (
-                    <div className="flex gap-3">
-                        <Link to={`/articles/${id}/edit`} className="bg-gray-100 px-4 py-2 rounded-lg text-sm hover:bg-gray-200">
-                            Rediger
-                        </Link>
-                        <button onClick={handleDelete} className="bg-red-100 text-red-700 px-4 py-2 rounded-lg text-sm hover:bg-red-200">
+                    <>
+                        <Link to={`/articles/${id}/edit`} className="win-menubar-item">Rediger</Link>
+                        <button onClick={handleDelete} className="win-menubar-item" style={{ color: '#800000' }}>
                             Slett
                         </button>
-                    </div>
+                    </>
                 )}
-            </nav>
+            </div>
 
-            <main className="max-w-3xl mx-auto px-6 py-8">
-                <h1 className="text-3xl font-bold mb-2">{article.title}</h1>
-                <p className="text-sm text-gray-500 mb-6">
-                    Av {article.author.username} · {new Date(article.createdAt).toLocaleDateString('nb-NO')}
-                    {article.category && ` · ${article.category.name}`}
-                </p>
-                <div className="bg-white rounded-xl p-6 shadow-sm whitespace-pre-wrap">
-                    {article.content}
+            <div className="win-toolbar">
+                <Link to="/" className="win-btn">← Tilbake til liste</Link>
+                {isAuthor && (
+                    <>
+                        <div className="win-toolbar-sep" />
+                        <Link to={`/articles/${id}/edit`} className="win-btn">✏ Rediger</Link>
+                        <button onClick={handleDelete} className="win-btn win-btn-danger">✕ Slett</button>
+                    </>
+                )}
+            </div>
+
+            <div className="win-article-meta">
+                <span>Av: <strong>{article.author.username}</strong></span>
+                <span style={{ color: '#808080' }}>|</span>
+                <span>{new Date(article.createdAt).toLocaleDateString('nb-NO')}</span>
+                {article.category && (
+                    <>
+                        <span style={{ color: '#808080' }}>|</span>
+                        <span>Kategori: <strong>{article.category.name}</strong></span>
+                    </>
+                )}
+                <span style={{ color: '#808080' }}>|</span>
+                <span className={`win-tag ${article.status === 'PUBLISHED' ? 'win-tag-published' : 'win-tag-draft'}`}>
+                    {article.status === 'PUBLISHED' ? 'Publisert' : 'Utkast'}
+                </span>
+            </div>
+
+            <div className="win-content" style={{ padding: 12 }}>
+                <div className="win-sunken" style={{ marginBottom: 8 }}>
+                    <div className="win-article-body">
+                        {article.content}
+                    </div>
                 </div>
+
                 {article.tags.length > 0 && (
-                    <div className="flex gap-2 mt-4">
-                        {article.tags.map(({ tag }) => (
-                            <span key={tag.name} className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full">
-                                {tag.name}
-                            </span>
-                        ))}
+                    <div className="win-group">
+                        <span className="win-group-title">Tagger</span>
+                        <div className="flex gap-1 flex-wrap">
+                            {article.tags.map(({ tag }) => (
+                                <span
+                                    key={tag.name}
+                                    style={{
+                                        background: '#d4d0c8',
+                                        border: '1px solid #000',
+                                        boxShadow: 'inset 1px 1px 0 #fff, inset -1px -1px 0 #808080',
+                                        padding: '1px 8px',
+                                        fontSize: 11,
+                                    }}
+                                >
+                                    {tag.name}
+                                </span>
+                            ))}
+                        </div>
                     </div>
                 )}
-            </main>
+            </div>
+
+            <div className="win-statusbar">
+                <div className="win-statusbar-cell">Klar</div>
+                <div className="flex-1" />
+                <div className="win-statusbar-cell">
+                    {user ? `Innlogget: ${user.username}` : 'Ikke innlogget'}
+                </div>
+            </div>
         </div>
     );
 }

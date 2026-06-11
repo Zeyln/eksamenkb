@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getArticles } from '../api/articles';
 import { getCategories } from '../api/categories';
-import Select from 'react-select';
 
 interface Article {
     id: string;
@@ -23,9 +22,10 @@ interface Category {
 
 export default function HomePage() {
     const { user, logout } = useAuth();
+    const navigate = useNavigate();
     const [articles, setArticles] = useState<Article[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
-    const [selectedCategory, setSelectedCategory] = useState<{ value: string; label: string } | null>(null);
+    const [selectedCategory, setSelectedCategory] = useState('');
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -37,81 +37,116 @@ export default function HomePage() {
             .finally(() => setLoading(false));
     }, []);
 
-    const categoryOptions = categories.flatMap((cat) => [
-        { value: cat.id, label: cat.name },
-        ...cat.children.map((child) => ({ value: child.id, label: `↳ ${child.name}` }))
-    ]);
-
     const filtered = selectedCategory
-        ? articles.filter((a) => a.category?.id === selectedCategory.value)
+        ? articles.filter((a) => a.category?.id === selectedCategory)
         : articles;
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <nav className="bg-white border-b px-6 py-4 flex justify-between items-center">
-                <h1 className="text-xl font-bold">Kunnskapsbase</h1>
-                <div className="flex items-center gap-4">
-                    {user ? (
-                        <>
-                            <Link to="/categories" className="text-sm text-gray-600 hover:text-gray-900">
-                                Kategorier
-                            </Link>
-                            <span className="text-sm text-gray-600">Hei, {user.username}</span>
-                            <Link to="/articles/new" className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700">
-                                Ny artikkel
-                            </Link>
-                            <button onClick={logout} className="text-sm text-gray-600 hover:text-gray-900">
-                                Logg ut
-                            </button>
-                        </>
-                    ) : (
-                        <Link to="/login" className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700">
-                            Logg inn
-                        </Link>
-                    )}
+        <div className="win-app">
+            <div className="win-titlebar">
+                <div className="win-titlebar-title">
+                    <span>Kunnskapsbase — EksamenKB</span>
                 </div>
-            </nav>
+                {user && <span style={{ fontSize: 12, opacity: 0.75 }}>{user.username}</span>}
+            </div>
 
-            <main className="max-w-4xl mx-auto px-6 py-8">
-                <div className="mb-6 w-72">
-                    <Select
-                        options={categoryOptions}
-                        value={selectedCategory}
-                        onChange={(val) => setSelectedCategory(val)}
-                        isClearable
-                        placeholder="Velg kategori..."
-                        noOptionsMessage={() => 'Ingen kategorier funnet'}
-                    />
-                </div>
-
-                {loading ? (
-                    <p className="text-gray-500">Laster artikler...</p>
-                ) : filtered.length === 0 ? (
-                    <p className="text-gray-500">Ingen artikler her ennå.</p>
+            <div className="win-menubar">
+                <Link to="/" className="win-menubar-item">Hjem</Link>
+                <Link to="/categories" className="win-menubar-item">Kategorier</Link>
+                <div className="flex-1" />
+                {user ? (
+                    <button onClick={logout} className="win-menubar-item">
+                        Logg ut
+                    </button>
                 ) : (
-                    <div className="space-y-4">
-                        {filtered.map((article) => (
-                            <Link
-                                key={article.id}
-                                to={`/articles/${article.id}`}
-                                className="block bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition"
-                            >
-                                <div className="flex justify-between items-start">
-                                    <h2 className="text-lg font-semibold">{article.title}</h2>
-                                    <span className={`text-xs px-2 py-1 rounded-full ${article.status === 'PUBLISHED' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
-                                        }`}>
-                                        {article.status === 'PUBLISHED' ? 'Publisert' : 'Utkast'}
-                                    </span>
-                                </div>
-                                <p className="text-sm text-gray-500 mt-1">
-                                    Av {article.author.username} · {new Date(article.createdAt).toLocaleDateString('nb-NO')}
-                                    {article.category && ` · ${article.category.name}`}
-                                </p>
-                            </Link>
-                        ))}
+                    <Link to="/login" className="win-menubar-item">Logg inn</Link>
+                )}
+            </div>
+
+            <div className="win-toolbar">
+                {user && (
+                    <>
+                        <Link to="/articles/new" className="win-btn win-btn-primary">+ Ny artikkel</Link>
+                        <div className="win-toolbar-sep" />
+                    </>
+                )}
+                <span className="win-toolbar-label" style={{ fontSize: 12, color: '#64748b' }}>Kategori:</span>
+                <select
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    className="win-select"
+                    style={{ width: 200 }}
+                >
+                    <option value="">Alle kategorier</option>
+                    {categories.flatMap((cat) => [
+                        <option key={cat.id} value={cat.id}>{cat.name}</option>,
+                        ...cat.children.map((child) => (
+                            <option key={child.id} value={child.id}>  ↳ {child.name}</option>
+                        ))
+                    ])}
+                </select>
+                {selectedCategory && (
+                    <button className="win-btn" onClick={() => setSelectedCategory('')}>✕ Fjern filter</button>
+                )}
+            </div>
+
+            <div className="win-content">
+                {loading ? (
+                    <div className="p-4" style={{ color: '#64748b' }}>Laster artikler...</div>
+                ) : (
+                    <div className="win-sheet-wrapper">
+                        <table className="win-sheet">
+                            <thead>
+                                <tr>
+                                    <th className="col-rn">#</th>
+                                    <th style={{ minWidth: 280 }}>Tittel</th>
+                                    <th style={{ width: 140 }}>Forfatter</th>
+                                    <th style={{ width: 100 }}>Dato</th>
+                                    <th style={{ width: 160 }}>Kategori</th>
+                                    <th style={{ width: 100 }}>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filtered.length === 0 ? (
+                                    <tr>
+                                        <td className="col-rn">—</td>
+                                        <td colSpan={5} style={{ color: '#94a3b8', fontStyle: 'italic', maxWidth: 'none' }}>
+                                            Ingen artikler her ennå.
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    filtered.map((article, i) => (
+                                        <tr
+                                            key={article.id}
+                                            onClick={() => navigate(`/articles/${article.id}`)}
+                                        >
+                                            <td className="col-rn">{i + 1}</td>
+                                            <td style={{ fontWeight: 500 }}>{article.title}</td>
+                                            <td style={{ color: '#475569' }}>{article.author.username}</td>
+                                            <td style={{ color: '#475569' }}>{new Date(article.createdAt).toLocaleDateString('nb-NO')}</td>
+                                            <td style={{ color: '#475569' }}>{article.category?.name ?? '—'}</td>
+                                            <td>
+                                                <span className={`win-tag ${article.status === 'PUBLISHED' ? 'win-tag-published' : 'win-tag-draft'}`}>
+                                                    {article.status === 'PUBLISHED' ? 'Publisert' : 'Utkast'}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
                     </div>
                 )}
-            </main>
+            </div>
+
+            <div className="win-statusbar">
+                <div className="win-statusbar-cell">{filtered.length} artikler</div>
+                {selectedCategory && <div className="win-statusbar-cell">Filtrert</div>}
+                <div className="flex-1" />
+                <div className="win-statusbar-cell">
+                    {user ? `Innlogget: ${user.username}` : 'Ikke innlogget'}
+                </div>
+            </div>
         </div>
     );
 }

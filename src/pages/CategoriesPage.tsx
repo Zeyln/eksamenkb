@@ -60,114 +60,173 @@ export default function CategoriesPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <nav className="bg-white border-b px-6 py-4 flex justify-between items-center">
-                <div className="flex items-center gap-4">
-                    <Link to="/" className="text-blue-600 hover:underline text-sm">← Tilbake</Link>
-                    <h1 className="text-xl font-bold">Kategorier</h1>
+        <div className="win-app">
+            <div className="win-titlebar">
+                <div className="win-titlebar-title">
+                    <span>🗂</span>
+                    <span>Kategorier — EksamenKB</span>
                 </div>
-            </nav>
+            </div>
 
-            <main className="max-w-3xl mx-auto px-6 py-8 space-y-8">
-                {user && (
-                    <div className="bg-white rounded-xl p-6 shadow-sm">
-                        <h2 className="text-lg font-semibold mb-4">Opprett kategori</h2>
-                        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-                        <form onSubmit={handleSubmit} className="space-y-3">
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Navn</label>
-                                <input
-                                    type="text"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    required
-                                />
+            <div className="win-menubar">
+                <Link to="/" className="win-menubar-item">← Tilbake</Link>
+                <span className="win-menubar-item">Vis</span>
+            </div>
+
+            <div className="win-toolbar">
+                <Link to="/" className="win-btn">← Tilbake til liste</Link>
+            </div>
+
+            <div className="win-content" style={{ padding: 12 }}>
+                <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+
+                    {/* Category tree — left pane */}
+                    <div style={{ flex: 1, minWidth: 220 }}>
+                        <div className="win-panel" style={{ padding: 0 }}>
+                            <div style={{
+                                background: 'linear-gradient(90deg, #000080 0%, #1084d0 100%)',
+                                color: '#fff',
+                                padding: '2px 8px',
+                                fontSize: 11,
+                                fontWeight: 'bold',
+                            }}>
+                                Alle kategorier
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Beskrivelse</label>
-                                <input
-                                    type="text"
-                                    value={description}
-                                    onChange={(e) => setDescription(e.target.value)}
-                                    className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Underkategori av</label>
-                                <select
-                                    value={parentId}
-                                    onChange={(e) => setParentId(e.target.value)}
-                                    className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                >
-                                    <option value="">Ingen (toppnivå)</option>
+
+                            {loading ? (
+                                <div style={{ padding: 8, fontSize: 12 }}>Laster...</div>
+                            ) : categories.length === 0 ? (
+                                <div style={{ padding: 8, fontSize: 12, color: '#808080', fontStyle: 'italic' }}>
+                                    Ingen kategorier ennå.
+                                </div>
+                            ) : (
+                                <div className="win-tree">
                                     {categories.map((cat) => (
-                                        <option key={cat.id} value={cat.id}>{cat.name}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <button
-                                type="submit"
-                                disabled={submitting}
-                                className="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
-                            >
-                                {submitting ? 'Oppretter...' : 'Opprett'}
-                            </button>
-                        </form>
-                    </div>
-                )}
-
-                <div className="bg-white rounded-xl p-6 shadow-sm">
-                    <h2 className="text-lg font-semibold mb-4">Alle kategorier</h2>
-                    {loading ? (
-                        <p className="text-gray-500 text-sm">Laster...</p>
-                    ) : categories.length === 0 ? (
-                        <p className="text-gray-500 text-sm">Ingen kategorier ennå.</p>
-                    ) : (
-                        <ul className="space-y-3">
-                            {categories.map((cat) => (
-                                <li key={cat.id}>
-                                    <div className="flex justify-between items-center py-2 border-b">
-                                        <div>
-                                            <p className="font-medium text-sm">{cat.name}</p>
-                                            {cat.description && <p className="text-xs text-gray-500">{cat.description}</p>}
-                                            <p className="text-xs text-gray-400">{cat._count.articles} artikler</p>
-                                        </div>
-                                        {user && (
-                                            <button
-                                                onClick={() => handleDelete(cat.id)}
-                                                className="text-red-500 text-xs hover:underline"
-                                            >
-                                                Slett
-                                            </button>
-                                        )}
-                                    </div>
-                                    {cat.children.length > 0 && (
-                                        <ul className="ml-4 mt-2 space-y-2">
+                                        <div key={cat.id}>
+                                            <div className="win-tree-item">
+                                                <span>
+                                                    📁 {cat.name}
+                                                    <span className="win-tree-count">({cat._count.articles})</span>
+                                                </span>
+                                                {user && (
+                                                    <button
+                                                        className="win-tree-delete"
+                                                        onClick={() => handleDelete(cat.id)}
+                                                    >
+                                                        Slett
+                                                    </button>
+                                                )}
+                                            </div>
+                                            {cat.description && (
+                                                <div style={{ paddingLeft: 24, fontSize: 11, color: '#404040' }}>
+                                                    {cat.description}
+                                                </div>
+                                            )}
                                             {cat.children.map((child) => (
-                                                <li key={child.id} className="flex justify-between items-center py-1 border-b">
-                                                    <div>
-                                                        <p className="text-sm text-gray-700">↳ {child.name}</p>
-                                                        {child.description && <p className="text-xs text-gray-500">{child.description}</p>}
-                                                    </div>
+                                                <div key={child.id} className="win-tree-item win-tree-child">
+                                                    <span>
+                                                        📄 {child.name}
+                                                        <span className="win-tree-count">({child._count?.articles ?? 0})</span>
+                                                    </span>
                                                     {user && (
                                                         <button
+                                                            className="win-tree-delete"
                                                             onClick={() => handleDelete(child.id)}
-                                                            className="text-red-500 text-xs hover:underline"
                                                         >
                                                             Slett
                                                         </button>
                                                     )}
-                                                </li>
+                                                </div>
                                             ))}
-                                        </ul>
-                                    )}
-                                </li>
-                            ))}
-                        </ul>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Create form — right pane */}
+                    {user && (
+                        <div style={{ width: 280, flexShrink: 0 }}>
+                            <div className="win-panel" style={{ padding: 0 }}>
+                                <div style={{
+                                    background: 'linear-gradient(90deg, #000080 0%, #1084d0 100%)',
+                                    color: '#fff',
+                                    padding: '2px 8px',
+                                    fontSize: 11,
+                                    fontWeight: 'bold',
+                                }}>
+                                    Opprett kategori
+                                </div>
+                                <form onSubmit={handleSubmit} style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                    {error && <div className="win-error">{error}</div>}
+
+                                    <div>
+                                        <label className="win-label">Navn:</label>
+                                        <input
+                                            type="text"
+                                            value={name}
+                                            onChange={(e) => setName(e.target.value)}
+                                            className="win-input"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="win-label">Beskrivelse:</label>
+                                        <input
+                                            type="text"
+                                            value={description}
+                                            onChange={(e) => setDescription(e.target.value)}
+                                            className="win-input"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="win-label">Underkategori av:</label>
+                                        <select
+                                            value={parentId}
+                                            onChange={(e) => setParentId(e.target.value)}
+                                            className="win-select"
+                                        >
+                                            <option value="">Ingen (toppnivå)</option>
+                                            {categories.map((cat) => (
+                                                <option key={cat.id} value={cat.id}>{cat.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div style={{ borderTop: '1px solid #808080', paddingTop: 8, display: 'flex', gap: 6 }}>
+                                        <button
+                                            type="submit"
+                                            disabled={submitting}
+                                            className="win-btn"
+                                            style={{ fontWeight: 'bold' }}
+                                        >
+                                            {submitting ? 'Oppretter...' : 'OK'}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="win-btn"
+                                            onClick={() => { setName(''); setDescription(''); setParentId(''); }}
+                                        >
+                                            Tilbakestill
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     )}
                 </div>
-            </main>
+            </div>
+
+            <div className="win-statusbar">
+                <div className="win-statusbar-cell">{categories.length} kategorier</div>
+                <div className="flex-1" />
+                <div className="win-statusbar-cell">
+                    {user ? `Innlogget: ${user.username}` : 'Ikke innlogget'}
+                </div>
+            </div>
         </div>
     );
 }

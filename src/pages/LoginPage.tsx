@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function LoginPage() {
     const { login } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
+    const from = (location.state as any)?.from?.pathname ?? '/';
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -16,7 +18,7 @@ export default function LoginPage() {
         setLoading(true);
         try {
             await login(email, password);
-            navigate('/');
+            navigate(from, { replace: true });
         } catch (err: any) {
             setError(err.response?.data?.error || 'Noe gikk galt');
         } finally {
@@ -25,43 +27,60 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-            <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
-                <h1 className="text-2xl font-bold mb-6">Logg inn</h1>
-                {error && <p className="text-red-500 mb-4 text-sm">{error}</p>}
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium mb-1">E-post</label>
-                        <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
+        <div className="win-dialog-backdrop">
+            <div className="win-dialog">
+                <div className="win-titlebar">
+                    <div className="win-titlebar-title">
+                        <span>🔐</span>
+                        <span>Logg inn — EksamenKB</span>
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium mb-1">Passord</label>
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
+                    <div className="flex gap-0.5">
+                        <Link to="/" className="win-titlebar-btn" title="Tilbake">✕</Link>
                     </div>
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
-                    >
-                        {loading ? 'Logger inn...' : 'Logg inn'}
-                    </button>
+                </div>
+
+                <form onSubmit={handleSubmit}>
+                    <div className="win-dialog-body">
+                        {error && <div className="win-error">{error}</div>}
+
+                        <div>
+                            <label className="win-label">E-post:</label>
+                            <input
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="win-input"
+                                required
+                                autoFocus
+                            />
+                        </div>
+
+                        <div>
+                            <label className="win-label">Passord:</label>
+                            <input
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="win-input"
+                                required
+                            />
+                        </div>
+
+                        <p style={{ fontSize: 11, color: '#404040', marginTop: 4 }}>
+                            Ingen konto?{' '}
+                            <Link to="/register" style={{ color: '#000080' }}>Registrer deg</Link>
+                        </p>
+                    </div>
+
+                    <div className="win-dialog-footer">
+                        <button type="submit" disabled={loading} className="win-btn">
+                            {loading ? 'Logger inn...' : 'OK'}
+                        </button>
+                        <Link to="/" className="win-btn" style={{ textAlign: 'center' }}>
+                            Avbryt
+                        </Link>
+                    </div>
                 </form>
-                <p className="text-sm text-center mt-4">
-                    Har du ikke konto?{' '}
-                    <Link to="/register" className="text-blue-600 hover:underline">Registrer deg</Link>
-                </p>
             </div>
         </div>
     );
