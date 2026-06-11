@@ -2,7 +2,7 @@
 
 ## 🧭 Overview
 
-EksamenKB is a full-stack internal knowledge base application designed for companies to let their employees write, organise, and share documentation. It is intended as a white-label B2B product: each client company deploys their own instance, manages their own users, and owns their data. Access is strictly restricted to authorised personnel — there is no public registration.
+EksamenKB is a full-stack internal knowledge base application designed for companies to let their employees write, organise, and share documentation. It is a hosted B2B product: EksamenKB develops, maintains, and operates the infrastructure on behalf of each client company. The client company is the data controller — they retain admin access to user management and own their data — but EksamenKB manages all hosting. Access is strictly restricted to authorised personnel; there is no public registration.
 
 The application is built with Norwegian businesses as the primary market and is designed to comply with GDPR and applicable Norwegian data protection law (Datatilsynet).
 
