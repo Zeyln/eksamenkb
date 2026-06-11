@@ -29,6 +29,8 @@ The application is built with Norwegian businesses as the primary market and is 
   - `api` container: Node.js / Express / Prisma
   - `db` container: PostgreSQL with mounted volume for persistence
 
+![Alt text](EksamenKBFinalExport.drawio.png)
+
 ---
 
 ## Features
