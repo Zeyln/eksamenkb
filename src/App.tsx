@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ArticlePage from './pages/ArticlePage';
 import ArticleFormPage from './pages/ArticleFormPage';
+import CategoriesPage from './pages/CategoriesPage';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
@@ -24,6 +25,9 @@ export default function App() {
       } />
       <Route path="/articles/:id/edit" element={
         <ProtectedRoute><ArticleFormPage /></ProtectedRoute>
+      } />
+      <Route path="/categories" element={
+        <ProtectedRoute><CategoriesPage /></ProtectedRoute>
       } />
     </Routes>
   );

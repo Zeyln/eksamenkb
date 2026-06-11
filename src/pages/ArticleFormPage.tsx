@@ -1,6 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createArticle, getArticle, updateArticle } from '../api/articles';
+import { getCategories } from '../api/categories';
+import Select from 'react-select';
+
+interface Category {
+    id: string;
+    name: string;
+    children: { id: string; name: string }[];
+}
 
 export default function ArticleFormPage() {
     const { id } = useParams<{ id: string }>();
@@ -10,29 +18,46 @@ export default function ArticleFormPage() {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [status, setStatus] = useState('DRAFT');
+    const [categoryOption, setCategoryOption] = useState<{ value: string; label: string } | null>(null);
+    const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
     useEffect(() => {
+        getCategories().then(setCategories);
         if (isEditing && id) {
             getArticle(id).then((article) => {
                 setTitle(article.title);
                 setContent(article.content);
                 setStatus(article.status);
+                if (article.category) {
+                    setCategoryOption({ value: article.categoryId, label: article.category.name });
+                }
             });
         }
     }, [id]);
+
+    const categoryOptions = categories.flatMap((cat) => [
+        { value: cat.id, label: cat.name },
+        ...cat.children.map((child) => ({ value: child.id, label: `↳ ${child.name}` }))
+    ]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
         setLoading(true);
         try {
+            const payload = {
+                title,
+                content,
+                status,
+                categoryId: categoryOption?.value || undefined
+            };
             if (isEditing && id) {
-                await updateArticle(id, { title, content, status });
+                await updateArticle(id, payload);
                 navigate(`/articles/${id}`);
             } else {
-                const article = await createArticle({ title, content, status });
+                const article = await createArticle(payload);
                 navigate(`/articles/${article.id}`);
             }
         } catch (err: any) {
@@ -71,16 +96,29 @@ export default function ArticleFormPage() {
                             required
                         />
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium mb-1">Status</label>
-                        <select
-                            value={status}
-                            onChange={(e) => setStatus(e.target.value)}
-                            className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            <option value="DRAFT">Utkast</option>
-                            <option value="PUBLISHED">Publisert</option>
-                        </select>
+                    <div className="flex gap-4">
+                        <div className="flex-1">
+                            <label className="block text-sm font-medium mb-1">Kategori</label>
+                            <Select
+                                options={categoryOptions}
+                                value={categoryOption}
+                                onChange={(val) => setCategoryOption(val)}
+                                isClearable
+                                placeholder="Søk etter kategori..."
+                                noOptionsMessage={() => 'Ingen kategorier funnet'}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-1">Status</label>
+                            <select
+                                value={status}
+                                onChange={(e) => setStatus(e.target.value)}
+                                className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="DRAFT">Utkast</option>
+                                <option value="PUBLISHED">Publisert</option>
+                            </select>
+                        </div>
                     </div>
                     <div className="flex gap-3">
                         <button
