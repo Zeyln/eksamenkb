@@ -63,3 +63,6 @@ The application is built with Norwegian businesses as the primary market and is 
 - Data Processing Agreement (DPA) template
 - Passwords stored exclusively as hashed values — never plain text
 - No cookies, tracking, or third-party analytics
+
+**Disclaimer**
+Codebase includes code written with help from Claude.ai and Claude code.
