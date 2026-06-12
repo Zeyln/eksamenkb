@@ -53,7 +53,8 @@ export default function ArticlePage() {
         </div>
     );
 
-    const isAuthor = user?.id === article.author.id;
+    //Deprecated feature
+    //const isAuthor = user?.id === article.author.id;
 
     return (
         <div className="win-app">
@@ -64,22 +65,9 @@ export default function ArticlePage() {
                 </div>
             </div>
 
-            <div className="win-menubar">
-                <Link to="/" className="win-menubar-item">← Tilbake</Link>
-                <div className="flex-1" />
-                {isAuthor && (
-                    <>
-                        <Link to={`/articles/${id}/edit`} className="win-menubar-item">Rediger</Link>
-                        <button onClick={handleDelete} className="win-menubar-item" style={{ color: '#800000' }}>
-                            Slett
-                        </button>
-                    </>
-                )}
-            </div>
-
             <div className="win-toolbar">
                 <Link to="/" className="win-btn">← Tilbake til liste</Link>
-                {isAuthor && (
+                {!!user && (
                     <>
                         <div className="win-toolbar-sep" />
                         <Link to={`/articles/${id}/edit`} className="win-btn">✏ Rediger</Link>
